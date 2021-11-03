@@ -1,8 +1,13 @@
+import time
+from threading import Thread
+
 from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QWidget, QLineEdit, QPushButton, QLabel, QComboBox
+from PyQt5.QtWidgets import QWidget, QLineEdit, QPushButton, QLabel, QComboBox, \
+    QProgressBar
 
 import service
 import authentication
+import update_profile
 
 
 class MainScreen(QWidget):
@@ -17,6 +22,12 @@ class MainScreen(QWidget):
         self.setFixedSize(500, 590)
 
     def initUI(self, items):
+        self.ex_ = QPushButton('Редактировать профиль', self)
+        self.ex_.resize(400, 30)
+        self.ex_.move(50, 520)
+        self.ex_.setStyleSheet('.QPushButton { font-size: 11pt; }')
+        self.ex_.clicked.connect(self.update_profile)
+
         self.ex_ = QPushButton('Выйти', self)
         self.ex_.resize(85, 30)
         self.ex_.move(364, 485)
@@ -28,6 +39,12 @@ class MainScreen(QWidget):
         self.gnrt.move(50, 485)
         self.gnrt.setStyleSheet('.QPushButton { font-size: 11pt; }')
         self.gnrt.clicked.connect(self.generate_new_pattern)
+
+        self.progress = QProgressBar(self)
+        self.progress.resize(400, 20)
+        self.progress.move(50, 460)
+        self.progress.setMaximum(100)
+        self.progress.setValue(0)
 
         self.name_pattern = QLineEdit(self)
         self.name_pattern.resize(400, 40)
@@ -74,12 +91,15 @@ class MainScreen(QWidget):
         if pattern == "":
             return QtWidgets.QMessageBox.warning(self, 'Ошибка',
                                                  'Введите название паттерна!')
-        QtWidgets.QMessageBox.warning(self, 'Уведомление',
-                                      'Генерация началась. Ожидайте '
-                                      'уведомления.\nНе создавайте новую '
-                                      'генерацию!')
-        response = service.generate_new_pattern(pattern, self.id_)
-        if not response:
+        self.status = {'success': False}
+        self.response = Thread(target=service.generate_new_pattern,
+                               args=(pattern, self.id_, self.status))
+        pgrss_bar = Thread(target=self.progress_bar)
+        self.response.start()
+        pgrss_bar.start()
+        self.response.join()
+
+        if not self.response:
             return QtWidgets.QMessageBox.warning(self, 'Уведомление',
                                                  'Произошла ошибка попробуйте '
                                                  'еще раз!!')
@@ -89,11 +109,14 @@ class MainScreen(QWidget):
 
     def generate_saved_pattern(self):
         saved_pattern = self.combo.currentText()
-        QtWidgets.QMessageBox.warning(self, 'Уведомление',
-                                      'Генерация началась. Ожидайте '
-                                      'уведомления.\nНе создавайте новую '
-                                      'генерацию!')
-        service.generate_saved_pattern(saved_pattern)
+        self.status = {'success': False}
+        self.response = Thread(target=service.generate_saved_pattern,
+                               args=(saved_pattern, self.status))
+        pgrss_bar = Thread(target=self.progress_bar)
+        self.response.start()
+        pgrss_bar.start()
+        self.response.join()
+
         return QtWidgets.QMessageBox.warning(self, 'Уведомление',
                                              'Ваш паттерн готов!')
 
@@ -101,8 +124,34 @@ class MainScreen(QWidget):
         response = service.show_saved_pattern(self.id_)
         return response
 
+    def progress_bar(self):
+        TIME_LIMIT = 100
+        self.count = 0
+
+        while self.count < TIME_LIMIT:
+            if self.count == 96 and not self.status["success"]:
+                while not self.status["success"]:
+                    time.sleep(0.1)
+                self.progress.setValue(100)
+                break
+
+            if self.status["success"]:
+                self.progress.setValue(100)
+                break
+
+            self.count += 1
+            time.sleep(1)
+            self.progress.setValue(self.count)
+        time.sleep(2)
+        self.progress.setValue(0)
+
     def exit(self):
         self.auth_ = authentication.Authentication()
+        self.auth_.show()
+        self.close()
+
+    def update_profile(self):
+        self.auth_ = update_profile.UpdateProfile(self.id_)
         self.auth_.show()
         self.close()
 

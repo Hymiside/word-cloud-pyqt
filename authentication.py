@@ -30,8 +30,8 @@ class Authentication(QWidget):
 
         # Кнопка войти
         self.btn = QPushButton('Войти', self)
-        self.btn.resize(140, 55)
-        self.btn.move(180, 329)
+        self.btn.resize(200, 55)
+        self.btn.move(150, 339)
         self.btn.setStyleSheet('.QPushButton { font-size: 15pt; }')
         self.btn.clicked.connect(self.validation_data)
 
@@ -45,7 +45,7 @@ class Authentication(QWidget):
         # Форма для логина
         self.login = QLineEdit(self)
         self.login.resize(400, 50)
-        self.login.move(50, 164)
+        self.login.move(50, 174)
         self.login.setPlaceholderText('Логин')
 
         # Параметры окна

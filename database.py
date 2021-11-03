@@ -1,7 +1,7 @@
 import sqlite3
 from typing import Tuple
 
-conn = sqlite3.connect("service.db")
+conn = sqlite3.connect("service.db", check_same_thread=False)
 cursor = conn.cursor()
 
 
@@ -69,6 +69,17 @@ def get_word_cloud_pattern(title: str) -> list:
     cursor.execute("SELECT word_cloud FROM patterns WHERE title = ?", (title, ))
     word_cloud = [i for i in cursor.fetchone()]
     return word_cloud
+
+
+def update_profile(id_: int, login: str, hash: str, salt: str, phone: str) \
+        -> bool:
+    try:
+        cursor.execute("UPDATE users SET login = ?, hash = ?, salt = ?, phone = ? "
+                       "WHERE id = ?", (login, hash, salt, phone, id_))
+        conn.commit()
+        return True
+    except sqlite3.Error:
+        return False
 
 
 def init_db():
