@@ -7,6 +7,7 @@ from PyQt5.QtWidgets import QWidget, QLineEdit, QPushButton, QLabel, QComboBox, 
 
 import service
 import authentication
+import tutorial
 import update_profile
 
 
@@ -156,4 +157,6 @@ class MainScreen(QWidget):
         self.close()
 
     def open_tutorial(self):
-        pass
+        self.auth_ = tutorial.Tutorial(self.id_)
+        self.auth_.show()
+        self.close()
