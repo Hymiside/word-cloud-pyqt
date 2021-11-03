@@ -31,7 +31,8 @@ def validation(login: str, password: str, phone_number: str) -> bool:
     return True
 
 
-def validation_update(id_: int, login: str, password: str, phone_number: str) -> bool:
+def validation_update(id_: int, login: str, password: str, phone_number: str) \
+        -> bool:
     response = validation(login, password, phone_number)
     if not response:
         return False

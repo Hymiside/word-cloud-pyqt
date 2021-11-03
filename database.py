@@ -73,9 +73,11 @@ def get_word_cloud_pattern(title: str) -> list:
 
 def update_profile(id_: int, login: str, hash: str, salt: str, phone: str) \
         -> bool:
+    """Обновляет данные пользователя"""
     try:
-        cursor.execute("UPDATE users SET login = ?, hash = ?, salt = ?, phone = ? "
-                       "WHERE id = ?", (login, hash, salt, phone, id_))
+        cursor.execute("UPDATE users SET login = ?, hash = ?, salt = ?, "
+                       "phone = ? WHERE id = ?",
+                       (login, hash, salt, phone, id_))
         conn.commit()
         return True
     except sqlite3.Error:
