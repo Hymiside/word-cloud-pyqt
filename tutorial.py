@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget, QLineEdit, QPushButton, QLabel
+from PyQt5.QtWidgets import QWidget, QPushButton, QLabel
 
 import main_screen
 
@@ -40,7 +40,6 @@ class Tutorial(QWidget):
                           "генерацию.")
         self.text.move(50, 110)
         self.text.setStyleSheet('.QLabel { font-size: 12pt;}')
-
 
         # Параметры окна
         self.setWindowTitle('WordPatterns')
