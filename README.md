@@ -33,7 +33,12 @@ pip install -r requirements.txt
 ```
 python3 database.py
 ```
-5. Запустите приложение командой:
+5. Запустите файл **setting.py**, чтобы установить необходимые файлы:
+```
+python3 setting.py
+```
+
+6. Запустите приложение командой:
 ```
 python3 main.py
 ```
