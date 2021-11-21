@@ -1,5 +1,6 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QWidget, QLineEdit, QPushButton, QLabel, QComboBox
+import multiprocessing
 
 import service
 import authentication
@@ -87,16 +88,15 @@ class MainScreen(QWidget):
                                       'уведомления.')
 
         self.status = {'success': False}
-        self.response = service.generate_new_pattern(pattern, self.id_,
-                                                     self.status)
+        self.response = multiprocessing.Process(target=service.generate_new_pattern,
+                                                args=(pattern, self.id_, self.status))
+        self.response.start()
 
         if not self.response:
             return QtWidgets.QMessageBox.warning(self, 'Уведомление',
                                                  'Произошла ошибка попробуйте '
                                                  'еще раз!')
         self.combo.addItem(pattern)
-        return QtWidgets.QMessageBox.warning(self, 'Уведомление',
-                                             'Ваш паттерн готов!')
 
     def generate_saved_pattern(self):
         saved_pattern = self.combo.currentText()
@@ -104,11 +104,9 @@ class MainScreen(QWidget):
                                       'Генерация началась! Ожидайте '
                                       'уведомления.')
         self.status = {'success': False}
-        service.generate_saved_pattern(saved_pattern,
-                                       self.status)
-
-        return QtWidgets.QMessageBox.warning(self, 'Уведомление',
-                                             'Ваш паттерн готов!')
+        p = multiprocessing.Process(target=service.generate_saved_pattern,
+                                    args=(saved_pattern, self.status))
+        p.start()
 
     def show_saved_pattern(self):
         response = service.show_saved_pattern(self.id_)

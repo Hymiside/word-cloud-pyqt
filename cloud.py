@@ -18,7 +18,7 @@ morph = pymorphy2.MorphAnalyzer(lang='ru')
 
 # Читаем json переписки из телеграма и конвертируем его в тип dict
 def read_json_tg() -> List[dict]:
-    with open("result.json") as a:
+    with open("result.json", encoding="utf-8", errors="ignore") as a:
         load_chat = [json.load(a)]
         return load_chat
 
