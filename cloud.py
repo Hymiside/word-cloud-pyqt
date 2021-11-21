@@ -103,4 +103,3 @@ def run(name_pattern: str) -> list and str:
 
 def run_saved_pattern(word_cloud: list) -> None:
     generate_cloud(word_cloud, "")
-
